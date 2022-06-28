@@ -51,6 +51,8 @@ class GetDetailEvent(APIView):
             return Response(data.data, status=status.HTTP_200_OK)
         return  Response({"msg":"No Content"}, status=status.HTTP_204_NO_CONTENT)
 
+
+
 class UpdateEvent(APIView):
     serializer_class = UpdateEventSerializer
     lookup_url_kwarg = 'id'
@@ -82,4 +84,3 @@ class UpdateEvent(APIView):
 
 def calendar(request):
     return render(request, 'index.html')
-

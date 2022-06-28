@@ -25,8 +25,13 @@
           url: "/api/events",
           dataType: "json",
           success: function(data){
-            console.log(data.length);
+            container = []
             for (let i = 0; i < data.length; i++) {
+              var title = data[i].title
+              var start_date = data[i].start_date
+              var end_date = data[i].end_date
+              container.push({title:title, start:start_date, end:end_date})
+            }
             var calendar = new FullCalendar.Calendar(calendarEl, {
               selectable: true,
               editable:true,
@@ -35,15 +40,9 @@
               center: 'title',
               right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
               },
-              events: [
-                {
-                  title: data[i].title,
-                  start: data[i].start_date,
-                  end: data[i].end_date,
-                }
-              ],
+              events: container,
         });
-          };
+
             calendar.render();
           }
         });
