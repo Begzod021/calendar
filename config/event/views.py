@@ -9,8 +9,8 @@ from .serializers import (
 from rest_framework.views import APIView
 from rest_framework import status, generics
 from  rest_framework.response import Response
-# Create your views here.
-
+import calendar
+from datetime import date, datetime
 
 class CreateEvent(APIView):
     serializer_class =CreateEventSerializer
@@ -34,12 +34,30 @@ class CreateEvent(APIView):
 
 class GetEvents(APIView):
     def get(self, request):
-        events = Event.objects.all()
-        serializer = GetEventsSerializer(events, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        year = datetime.now().year
+        month = datetime.now().month
+        events = Event.objects.filter(end_date__year = year, end_date__month=month)
+        if events.exists():
+            serializer = GetEventsSerializer(events, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        return Response({"msg":"Invalid data"}, status=status.HTTP_400_BAD_REQUEST)
 
 
+class GetArchivesEvents(APIView):
 
+    def get(self, request):
+        year = datetime.now().year
+        archives_year = 0
+        for i in range(year-1, year):
+            archives_year+=i
+        events = Event.objects.filter(end_date__year = archives_year)
+        if events.exists():
+            serializer = GetEventsSerializer(events, many=True)
+
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        return Response({"msg":"Invalid data"}, status=status.HTTP_400_BAD_REQUEST)
 
 class GetDetailEvent(APIView):
     lookup_url_kwarg = 'id'
@@ -82,5 +100,5 @@ class UpdateEvent(APIView):
 
 
 
-def calendar(request):
+def calendar_s(request):
     return render(request, 'index.html')
