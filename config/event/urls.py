@@ -1,6 +1,7 @@
 from django.urls import path
 from .views import *
 urlpatterns = [
+    path('', calendar),
     path('create', CreateEvent.as_view()),
     path('events', GetEvents.as_view()),
     path('event', GetDetailEvent.as_view()),
