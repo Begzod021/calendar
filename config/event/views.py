@@ -27,7 +27,7 @@ class CreateEvent(APIView):
         return Response({"msg":"No Content"}, status=status.HTTP_204_NO_CONTENT)
 
 
-class GetEvent(APIView):
+class GetEvents(APIView):
     def get(self, request):
         events = Event.objects.all()
         serializer = GetEventsSerializer(events, many=True)
@@ -36,13 +36,13 @@ class GetEvent(APIView):
 
 
 class GetDetailEvent(APIView):
-    serializer_class = GetEventsSerializer
     lookup_url_kwarg = 'id'
-    def get(self, request, format=None):
+    def get(self, request):
         id = request.GET.get(self.lookup_url_kwarg)
-
-        event = Event.objects.filter(id=id)
-        data = GetEventSerializer(event[0], many=False)
-        return Response(data.data, status=status.HTTP_200_OK)
+        if Event.objects.filter(id=id):
+            event = Event.objects.filter(id=id)
+            data = GetEventSerializer(event[0], many=False)
+            return Response(data.data, status=status.HTTP_200_OK)
+        return  Response({"msg":"No Content"}, status=status.HTTP_204_NO_CONTENT)
 
 
