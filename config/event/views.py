@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from .models import Event
-from .serializers import CreateEventSerializer, GetEventsSerializer
+from .serializers import CreateEventSerializer, GetEventsSerializer, GetEventSerializer
 from rest_framework.views import APIView
 from rest_framework import status, generics
 from  rest_framework.response import Response
@@ -32,3 +32,17 @@ class GetEvent(APIView):
         events = Event.objects.all()
         serializer = GetEventsSerializer(events, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
+class GetDetailEvent(APIView):
+    serializer_class = GetEventsSerializer
+    lookup_url_kwarg = 'id'
+    def get(self, request, format=None):
+        id = request.GET.get(self.lookup_url_kwarg)
+
+        event = Event.objects.filter(id=id)
+        data = GetEventSerializer(event[0], many=False)
+        return Response(data.data, status=status.HTTP_200_OK)
+
+
