@@ -32,3 +32,7 @@ class GetEvent(APIView):
         events = Event.objects.all()
         serializer = GetEventsSerializer(events, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+def calendar(request):
+    return render(request, 'index.html')
