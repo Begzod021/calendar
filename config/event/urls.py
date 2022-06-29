@@ -8,4 +8,5 @@ urlpatterns = [
     path('update', UpdateEvent.as_view()),
     path('archives', GetArchivesEvents.as_view()),
     path('updates/', eventupdate),
+    path('creates', createevent),
 ]

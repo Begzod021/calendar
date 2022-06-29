@@ -35,6 +35,31 @@
             }
             var calendar = new FullCalendar.Calendar(calendarEl, {
               selectable: true,
+              select: function(start, end) {
+              var title = prompt('Event Title:');
+              
+              if (title) {
+                var start_date = start.start.toISOString();
+                var end_date = start.end.toISOString();
+                $.ajax({
+                  type:"GET",
+                  url:'/api/creates',
+                  data: {
+                    "title":title,
+                    "start_date":start_date,
+                    "end_date": end_date,
+                  },
+                  dataType: 'json',
+                  success: function(data){
+                    calendar.addEvent({
+                      title:title,
+                      start: start_date,
+                      end:end_date
+                })
+                  }
+                })
+              }
+          },
               editable:true,
               eventDrop: function(event, events){
                 var id = event.event.id
@@ -46,12 +71,7 @@
                   url: '/api/updates/',
                   data:{'title':title, 'id':id, 'start_date':start_date, 'end_date':end_date},
                   success: function(data){
-                    container = []
-                      var title = data.title
-                      var start_date = data.start
-                      var end_date = data.end
-                      var id = data.id
-                      container.push({title:title, start:start_date, end:end_date, id:id})
+                    
                   }
                 })
               },
@@ -62,11 +82,11 @@
               },
               timeZone: 'Asia/Tashkent',
               events: container,
-        });
-
+              });
 
             calendar.render();
-          }
+            calendar.refetchEvents()
+          },
         });
       });
 

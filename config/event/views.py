@@ -22,10 +22,9 @@ class CreateEvent(APIView):
             title = serializer.data.get('title')
             start_date = serializer.data.get('start_date')
             end_date = serializer.data.get('end_date')
-            url = serializer.data.get('url')
 
 
-            event = Event(title=title, start_date=start_date, end_date=end_date, url=url)
+            event = Event(title=title, start_date=start_date, end_date=end_date)
             event.save()
 
             return Response(CreateEventSerializer(event).data, status=status.HTTP_201_CREATED)
@@ -41,8 +40,8 @@ class GetEvents(APIView):
         if events.exists():
             serializer = GetEventsSerializer(events, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
-        
-        return Response({"msg":"Invalid data"}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({}, status=status.HTTP_204_NO_CONTENT)
 
 
 class GetArchivesEvents(APIView):
@@ -105,7 +104,6 @@ def calendar_s(request):
 
 def eventupdate(request):
     start_date = request.GET.get('start_date', None)
-    print(start_date)
     id = request.GET.get('id', None)
     title = request.GET.get('title', None)
     end_date = request.GET.get('end_date', None)
@@ -121,4 +119,15 @@ def eventupdate(request):
         'end':end_date
     }
 
+    return JsonResponse(data)
+
+def createevent(request):
+    start_date = request.GET.get('start_date', None)
+    title = request.GET.get('title', None)
+    end_date = request.GET.get('end_date', None)
+    
+    event = Event.objects.create(title=title, start_date=start_date, end_date=end_date)
+    event.save()
+
+    data = {}
     return JsonResponse(data)
