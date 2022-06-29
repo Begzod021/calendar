@@ -42,12 +42,15 @@
                 var start_date = start.start.toISOString();
                 var end_date = start.end.toISOString();
                 $.ajax({
-                  type:"GET",
-                  url:'/api/creates',
+                  type:"POST",
+                  url:'/api/create',
                   data: {
                     "title":title,
                     "start_date":start_date,
                     "end_date": end_date,
+                  },
+                  headers: {
+                    'X-CSRFToken': $(this).data().csrf,
                   },
                   dataType: 'json',
                   success: function(data){

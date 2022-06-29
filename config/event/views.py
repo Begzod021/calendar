@@ -22,8 +22,7 @@ class CreateEvent(APIView):
             title = serializer.data.get('title')
             start_date = serializer.data.get('start_date')
             end_date = serializer.data.get('end_date')
-
-
+            print(title)
             event = Event(title=title, start_date=start_date, end_date=end_date)
             event.save()
 
@@ -119,15 +118,4 @@ def eventupdate(request):
         'end':end_date
     }
 
-    return JsonResponse(data)
-
-def createevent(request):
-    start_date = request.GET.get('start_date', None)
-    title = request.GET.get('title', None)
-    end_date = request.GET.get('end_date', None)
-    
-    event = Event.objects.create(title=title, start_date=start_date, end_date=end_date)
-    event.save()
-
-    data = {}
     return JsonResponse(data)
