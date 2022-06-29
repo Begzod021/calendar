@@ -11,6 +11,7 @@ from rest_framework import status, generics
 from  rest_framework.response import Response
 import calendar
 from datetime import date, datetime
+from django.http import JsonResponse
 
 class CreateEvent(APIView):
     serializer_class =CreateEventSerializer
@@ -100,3 +101,24 @@ class UpdateEvent(APIView):
 
 def calendar_s(request):
     return render(request, 'index.html')
+
+
+def eventupdate(request):
+    start_date = request.GET.get('start_date', None)
+    print(start_date)
+    id = request.GET.get('id', None)
+    title = request.GET.get('title', None)
+    end_date = request.GET.get('end_date', None)
+    event = Event.objects.get(id=id)
+    event.title = title
+    event.start_date = start_date
+    event.end_date = end_date
+    event.save()
+    data={
+        'title':title,
+        'id':id,
+        'start':start_date,
+        'end':end_date
+    }
+
+    return JsonResponse(data)

@@ -30,11 +30,31 @@
               var title = data[i].title
               var start_date = data[i].start_date
               var end_date = data[i].end_date
-              container.push({title:title, start:start_date, end:end_date})
+              var id = data[i].id
+              container.push({title:title, start:start_date, end:end_date, id:id})
             }
             var calendar = new FullCalendar.Calendar(calendarEl, {
               selectable: true,
               editable:true,
+              eventDrop: function(event, events){
+                var id = event.event.id
+                var title =  event.event.title
+                var start_date = event.event.start.toISOString()
+                var end_date = event.event.end.toISOString()
+                $.ajax({
+                  type:"GET",
+                  url: '/api/updates/',
+                  data:{'title':title, 'id':id, 'start_date':start_date, 'end_date':end_date},
+                  success: function(data){
+                    container = []
+                      var title = data.title
+                      var start_date = data.start
+                      var end_date = data.end
+                      var id = data.id
+                      container.push({title:title, start:start_date, end:end_date, id:id})
+                  }
+                })
+              },
               headerToolbar: {
               left: 'prev,next today',
               center: 'title',
@@ -43,6 +63,7 @@
               timeZone: 'Asia/Tashkent',
               events: container,
         });
+
 
             calendar.render();
           }
