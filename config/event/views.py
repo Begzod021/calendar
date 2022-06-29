@@ -17,12 +17,10 @@ class CreateEvent(APIView):
     serializer_class =CreateEventSerializer
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
-        print(serializer)
         if serializer.is_valid():
             title = serializer.data.get('title')
             start_date = serializer.data.get('start_date')
             end_date = serializer.data.get('end_date')
-            print(title)
             event = Event(title=title, start_date=start_date, end_date=end_date)
             event.save()
 
@@ -40,7 +38,8 @@ class GetEvents(APIView):
             serializer = GetEventsSerializer(events, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
-            return Response({}, status=status.HTTP_204_NO_CONTENT)
+            data = {}
+            return Response(data, status=status.HTTP_204_NO_CONTENT)
 
 
 class GetArchivesEvents(APIView):
@@ -56,6 +55,7 @@ class GetArchivesEvents(APIView):
         
         return Response({"msg":"Invalid data"}, status=status.HTTP_400_BAD_REQUEST)
 
+
 class GetDetailEvent(APIView):
     lookup_url_kwarg = 'id'
     def get(self, request):
@@ -70,16 +70,14 @@ class GetDetailEvent(APIView):
 
 class UpdateEvent(APIView):
     serializer_class = UpdateEventSerializer
-    lookup_url_kwarg = 'id'
     def patch(self, request):
         serializer = self.serializer_class(data=request.data)
-        id = request.GET.get('id')
-        if serializer.is_valid(raise_exception=True):
+        print(serializer)
+        if serializer.is_valid():
             title = serializer.data.get('title')
             start_date = serializer.data.get('start_date')
             end_date = serializer.data.get('end_date')
-            url = serializer.data.get('url')
-
+            id = serializer.data.get('id')
             queryset = Event.objects.filter(id=id)
             if not queryset.exists():
                 return Response({"msg":"Event Not Found"}, status=status.HTTP_404_NOT_FOUND)
@@ -88,8 +86,7 @@ class UpdateEvent(APIView):
             event.title = title
             event.start_date = start_date
             event.end_date = end_date
-            event.url = url
-            event.save(update_fields=["title", "start_date", "end_date", "url"])
+            event.save(update_fields=["title", "start_date", "end_date"])
 
             return Response(UpdateEventSerializer(event, many=False).data, status=status.HTTP_200_OK)
 
@@ -99,23 +96,3 @@ class UpdateEvent(APIView):
 
 def calendar_s(request):
     return render(request, 'index.html')
-
-
-def eventupdate(request):
-    start_date = request.GET.get('start_date', None)
-    id = request.GET.get('id', None)
-    title = request.GET.get('title', None)
-    end_date = request.GET.get('end_date', None)
-    event = Event.objects.get(id=id)
-    event.title = title
-    event.start_date = start_date
-    event.end_date = end_date
-    event.save()
-    data={
-        'title':title,
-        'id':id,
-        'start':start_date,
-        'end':end_date
-    }
-
-    return JsonResponse(data)
