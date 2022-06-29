@@ -7,11 +7,9 @@ from .serializers import (
     UpdateEventSerializer
 )
 from rest_framework.views import APIView
-from rest_framework import status, generics
+from rest_framework import status
 from  rest_framework.response import Response
-import calendar
-from datetime import date, datetime
-from django.http import JsonResponse
+from datetime import datetime
 
 class CreateEvent(APIView):
     serializer_class =CreateEventSerializer
@@ -72,7 +70,6 @@ class UpdateEvent(APIView):
     serializer_class = UpdateEventSerializer
     def patch(self, request):
         serializer = self.serializer_class(data=request.data)
-        print(serializer)
         if serializer.is_valid():
             title = serializer.data.get('title')
             start_date = serializer.data.get('start_date')

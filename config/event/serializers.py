@@ -1,6 +1,7 @@
-from cProfile import label
 from rest_framework import serializers
 from .models import Event
+
+
 class CreateEventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
