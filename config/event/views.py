@@ -31,7 +31,7 @@ class CreateEvent(APIView):
         return Response({"msg":"No Content"}, status=status.HTTP_204_NO_CONTENT)
 
 
-class GetEvents(APIView):
+class GetEvents(APIView): 
     def get(self, request):
         year = datetime.now().year
         month = datetime.now().month
