@@ -48,9 +48,7 @@ class GetArchivesEvents(APIView):
 
     def get(self, request):
         year = datetime.now().year
-        archives_year = 0
-        for i in range(year-1, year):
-            archives_year+=i
+        archives_year = year-1
         events = Event.objects.filter(end_date__year = archives_year)
         if events.exists():
             serializer = GetEventsSerializer(events, many=True)
