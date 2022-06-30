@@ -1,3 +1,4 @@
+from multiprocessing.spawn import import_main_path
 from django.shortcuts import render
 from .models import Event
 from .serializers import (
@@ -10,8 +11,13 @@ from rest_framework.views import APIView
 from rest_framework import status
 from  rest_framework.response import Response
 from datetime import datetime
+from rest_framework.permissions import IsAdminUser
+from rest_framework.decorators import permission_classes
+
 
 class CreateEvent(APIView):
+    
+    permission_classes = [IsAdminUser]
     serializer_class =CreateEventSerializer
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
@@ -19,7 +25,9 @@ class CreateEvent(APIView):
             title = serializer.data.get('title')
             start_date = serializer.data.get('start_date')
             end_date = serializer.data.get('end_date')
-            event = Event(title=title, start_date=start_date, end_date=end_date)
+            url = serializer.data.get('url')
+            print(url)
+            event = Event(title=title, start_date=start_date, end_date=end_date, url=url)
             event.save()
 
             return Response(CreateEventSerializer(event).data, status=status.HTTP_201_CREATED)
@@ -75,6 +83,7 @@ class UpdateEvent(APIView):
             start_date = serializer.data.get('start_date')
             end_date = serializer.data.get('end_date')
             id = serializer.data.get('id')
+            print(start_date)
             queryset = Event.objects.filter(id=id)
             if not queryset.exists():
                 return Response({"msg":"Event Not Found"}, status=status.HTTP_404_NOT_FOUND)

@@ -10,9 +10,28 @@
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+    function getToken(name) {
+		    var cookieValue = null;
+		    if (document.cookie && document.cookie !== '') {
+		        var cookies = document.cookie.split(';');
+		        for (var i = 0; i < cookies.length; i++) {
+		            var cookie = cookies[i].trim();
+		            // Does this cookie string begin with the name we want?
+		            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+		                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+		                break;
+		            }
+		        }
+		    }
+		    return cookieValue;
+		}
+		let csrftoken = getToken('csrftoken')
+  
+  </script>
   </head>
   <body>
-    <div class="contanier" style="margin: 50px;">
+    <div class="contanier" style="margin: 30px 250px;">
         <div id='calendar'></div>
     </div>
     <!-- Modal -->
@@ -69,14 +88,15 @@
               var start_date = data[i].start_date
               var end_date = data[i].end_date
               var id = data[i].id
-              container.push({title:title, start:start_date, end:end_date, id:id})
+              var url = data[i].url
+              container.push({title:title, start:start_date, end:end_date, id:id, url:url})
               }
             }
             var calendar = new FullCalendar.Calendar(calendarEl, {
               selectable: true,
               select: function(start, end) {
               var title = prompt('Event Title:');
-              
+              var url = prompt('URL:');
               if (title) {
                 var start_date = start.start.toISOString();
                 var end_date = start.end.toISOString();
@@ -87,16 +107,16 @@
                     "title":title,
                     "start_date":start_date,
                     "end_date": end_date,
+                    "url":url,
+                    csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
                   },
-                  headers: {
-                    'X-CSRFToken': $(this).data().csrf,
-                  },
+                  headers: {'X-CSRFToken': csrftoken},
                   dataType: 'json',
                   success: function(data){
                     calendar.addEvent({
                       title:title,
                       start: start_date,
-                      end:end_date
+                      end:end_date,
                 })
                   }
                 })
@@ -111,10 +131,8 @@
                 $.ajax({
                   type:"PATCH",
                   url: '/api/update',
-                  data:{'title':title,'start_date':start_date, 'end_date':end_date, 'id':id,},
-                  headers: {
-                    'X-CSRFToken': $(this).data().csrf,
-                  },
+                  data:{'title':title,'start_date':start_date, 'end_date':end_date, 'id':id, csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()},
+                  headers: {'X-CSRFToken': csrftoken},
                   dataType: 'json',
                   success: function(data){
                     
@@ -126,11 +144,13 @@
               center: 'title',
               right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
               },
-              timeZone: 'Asia/Tashkent',
+              timeZone: 'local',
               events: container,
+              eventColor: '#378006',
               eventClick: function(title){
-                alert('Event: '+ title.event.title)
-              }
+                alert('Event: '+ title.event.title + '\n' + 'Start: ' + title.event.start + '\n' + 'End: ' + title.event.end + '\n' + 'URL:' + title.event.url);
+                
+              },
               });
 
             calendar.render();
