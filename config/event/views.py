@@ -92,4 +92,4 @@ class UpdateEvent(APIView):
 
 
 def calendar_s(request):
-    return render(request, 'index.html')
+    return render(request, 'index.html')    
