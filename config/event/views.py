@@ -1,7 +1,5 @@
-from multiprocessing.spawn import import_main_path
-from time import timezone
-from unicodedata import name
-from django.shortcuts import render
+from turtle import st
+from django.shortcuts import render, redirect
 from .models import Event, StudentGroup
 from .serializers import (
     CreateEventSerializer,
@@ -42,7 +40,8 @@ class CreateEvent(APIView):
         return Response({"msg":"No Content"}, status=status.HTTP_204_NO_CONTENT)
 
 
-class GetEvents(APIView): 
+class GetEvents(APIView):
+
     serializer_class = GetEventsSerializer
     def post(self, request):
         serializer = GetDateSerializer(data=request.data)
@@ -54,33 +53,7 @@ class GetEvents(APIView):
             serializer = self.serializer_class(events, many=True)
 
             return Response(serializer.data, status=status.HTTP_200_OK) 
-
-
-class GetArchivesEvents(APIView):
-
-    def get(self, request):
-        year = datetime.now().year
-        archives_year = year-1
-        events = Event.objects.filter(end_date__year = archives_year)
-        if events.exists():
-            serializer = GetEventsSerializer(events, many=True)
-
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        
-        return Response({"msg":"Invalid data"}, status=status.HTTP_400_BAD_REQUEST)
-
-
-class GetDetailEvent(APIView):
-    lookup_url_kwarg = 'id'
-    def get(self, request):
-        id = request.GET.get(self.lookup_url_kwarg)
-        event = Event.objects.filter(id=id)
-        if event.exists():
-            data = GetEventSerializer(event[0], many=False)
-            return Response(data.data, status=status.HTTP_200_OK)
-        return  Response({"msg":"No Content"}, status=status.HTTP_204_NO_CONTENT)
-
-
+            
 
 class UpdateEvent(APIView):
     serializer_class = UpdateEventSerializer
@@ -120,3 +93,21 @@ class DeleteEvent(APIView):
 
 def calendar_s(request):
     return render(request, 'index.html')    
+
+def events(request, pk):
+
+
+    context = {
+        'id':pk
+    }
+    return render(request, 'events.html', context)
+
+class DetailEvent(APIView):
+    serializer_class = GetEventsSerializer
+    def get(self, request, pk):
+        students = StudentGroup.objects.filter(id=pk)
+        students = students[0]
+        events = Event.objects.filter(students=students)
+        serializer = self.serializer_class(events, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)

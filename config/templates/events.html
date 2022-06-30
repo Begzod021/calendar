@@ -42,52 +42,7 @@
     var calendarEl = document.getElementById('calendar');
     var calendar = new FullCalendar.Calendar(calendarEl, {
       selectable: true,
-      select: function(start, end) {
-      var title = prompt('Event Title:');
-      var url = prompt('URL:');
-      if (title) {
-        var start_date = start.start.toISOString();
-        var end_date = start.end.toISOString();
-        $.ajax({
-          type:"POST",
-          url:'/api/create',
-          data: {
-            "title":title,
-            "start_date":start_date,
-            "end_date": end_date,
-            "url":url,
-            'students':1,
-            csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
-          },
-          headers: {'X-CSRFToken': csrftoken},
-          dataType: 'json',
-          success: function(data){
-            calendar.addEvent({
-              title:title,
-              start: start_date,
-              end:end_date,
-        })
-          }
-        })
-      }
-  },
       editable:true,
-      eventDrop: function(event, events){
-        var id = event.event.id
-        var title =  event.event.title
-        var start_date = event.event.start.toISOString()
-        var end_date = event.event.end.toISOString()
-        $.ajax({
-          type:"PATCH",
-          url: '/api/update',
-          data:{'title':title,'start_date':start_date, 'end_date':end_date, 'id':id, csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()},
-          headers: {'X-CSRFToken': csrftoken},
-          dataType: 'json',
-          success: function(data){
-            
-          }
-        })  
-      },
       headerToolbar: {
       left: 'prev,next today',
       center: 'title',
@@ -98,8 +53,8 @@
         var start_date = info.start.toISOString();
         var end_date = info.end.toISOString();
         $.ajax({
-          type: "POST",
-          url: "/api/events",
+          type: "GET",
+          url: "/api/events/" + {{ id }},
           dataType: "json",
           data: {
             'start_date':start_date,
