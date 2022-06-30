@@ -1,5 +1,4 @@
-
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from .models import Event, StudentGroup
 from .serializers import (
     CreateEventSerializer,
@@ -11,10 +10,8 @@ from .serializers import (
 from rest_framework.views import APIView
 from rest_framework import status
 from  rest_framework.response import Response
-from datetime import date, datetime
 from rest_framework.permissions import IsAdminUser
 from rest_framework.decorators import permission_classes
-from datetime import datetime
 
 class CreateEvent(APIView):
     
