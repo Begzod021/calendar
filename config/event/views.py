@@ -28,7 +28,6 @@ class CreateEvent(APIView):
             end_date = serializer.data.get('end_date')
             url = serializer.data.get('url')
             id= serializer.data.get('students')
-
             students = StudentGroup.objects.filter(id=id)
             students = students[0]
 
@@ -94,13 +93,6 @@ class DeleteEvent(APIView):
 def calendar_s(request):
     return render(request, 'index.html')    
 
-def events(request, pk):
-
-
-    context = {
-        'id':pk
-    }
-    return render(request, 'events.html', context)
 
 class DetailEvent(APIView):
     serializer_class = GetEventsSerializer

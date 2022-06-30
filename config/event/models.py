@@ -1,10 +1,6 @@
 from django.db import models
+from students.models import StudentGroup
 
-
-
-class StudentGroup(models.Model):
-    name = models.CharField(max_length=155)
-    description = models.TextField()
     
 
 class Event(models.Model):

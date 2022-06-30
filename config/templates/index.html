@@ -97,8 +97,6 @@
       events: function(info, successCallback, id) {
         var start_date = info.start.toISOString();
         var end_date = info.end.toISOString();
-        var id = id
-        console.log(id)
         $.ajax({
           type: "POST",
           url: "/api/events",
