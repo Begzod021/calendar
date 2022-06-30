@@ -1,19 +1,21 @@
 from multiprocessing.spawn import import_main_path
+from time import timezone
 from django.shortcuts import render
 from .models import Event
 from .serializers import (
     CreateEventSerializer,
     GetEventsSerializer,
     GetEventSerializer,
-    UpdateEventSerializer
+    UpdateEventSerializer,
+    GetDateSerializer
 )
 from rest_framework.views import APIView
 from rest_framework import status
 from  rest_framework.response import Response
-from datetime import datetime
+from datetime import date, datetime
 from rest_framework.permissions import IsAdminUser
 from rest_framework.decorators import permission_classes
-
+from datetime import datetime
 
 class CreateEvent(APIView):
     
@@ -26,7 +28,6 @@ class CreateEvent(APIView):
             start_date = serializer.data.get('start_date')
             end_date = serializer.data.get('end_date')
             url = serializer.data.get('url')
-            print(url)
             event = Event(title=title, start_date=start_date, end_date=end_date, url=url)
             event.save()
 
@@ -36,16 +37,18 @@ class CreateEvent(APIView):
 
 
 class GetEvents(APIView): 
-    def get(self, request):
-        year = datetime.now().year
-        month = datetime.now().month
-        events = Event.objects.filter(end_date__year = year, end_date__month=month)
-        if events.exists():
-            serializer = GetEventsSerializer(events, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
-            data = {}
-            return Response(data, status=status.HTTP_204_NO_CONTENT)
+    serializer_class = GetEventsSerializer
+    def post(self, request):
+        serializer = GetDateSerializer(data=request.data)
+        print(serializer)
+        if serializer.is_valid():
+            start_date = serializer.data.get('start_date')
+            end_date = serializer.data.get('end_date')
+            students = serializer.data.get('students')
+            events = Event.objects.filter(start_date__gte=start_date, start_date__lte=end_date, students=students)
+            serializer = self.serializer_class(events, many=True)
+
+            return Response(serializer.data, status=status.HTTP_200_OK) 
 
 
 class GetArchivesEvents(APIView):
@@ -99,6 +102,16 @@ class UpdateEvent(APIView):
         return Response({"msg":"Invalid data"}, status=status.HTTP_400_BAD_REQUEST)
 
 
+class DeleteEvent(APIView):
+    serializer_class = GetEventSerializer
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            id = serializer.data.get('id')
+            event = Event.objects.filter(id=id)
+            event.delete()
+            return Response({'msg':'DELETED'}, status=status.HTTP_200_OK)
 
 def calendar_s(request):
     return render(request, 'index.html')    

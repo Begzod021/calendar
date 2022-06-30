@@ -1,6 +1,11 @@
 from rest_framework import serializers
 from .models import Event
 
+class GetDateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Event
+        fields = ('start_date','end_date', 'students')
+
 
 class CreateEventSerializer(serializers.ModelSerializer):
     class Meta:
@@ -10,7 +15,7 @@ class CreateEventSerializer(serializers.ModelSerializer):
 class GetEventsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
-        fields = ('title', 'start_date', 'end_date', 'url', 'id')
+        fields = ('title', 'start_date', 'end_date', 'url', 'id', 'students')
 
 class GetEventSerializer(serializers.ModelSerializer):
     class Meta:
