@@ -1,7 +1,8 @@
 from multiprocessing.spawn import import_main_path
 from time import timezone
+from unicodedata import name
 from django.shortcuts import render
-from .models import Event
+from .models import Event, StudentGroup
 from .serializers import (
     CreateEventSerializer,
     GetEventsSerializer,
@@ -28,7 +29,12 @@ class CreateEvent(APIView):
             start_date = serializer.data.get('start_date')
             end_date = serializer.data.get('end_date')
             url = serializer.data.get('url')
-            event = Event(title=title, start_date=start_date, end_date=end_date, url=url)
+            id= serializer.data.get('students')
+
+            students = StudentGroup.objects.filter(id=id)
+            students = students[0]
+
+            event = Event(title=title, start_date=start_date, end_date=end_date, url=url, students=students)
             event.save()
 
             return Response(CreateEventSerializer(event).data, status=status.HTTP_201_CREATED)
@@ -40,12 +46,11 @@ class GetEvents(APIView):
     serializer_class = GetEventsSerializer
     def post(self, request):
         serializer = GetDateSerializer(data=request.data)
-        print(serializer)
         if serializer.is_valid():
             start_date = serializer.data.get('start_date')
             end_date = serializer.data.get('end_date')
-            students = serializer.data.get('students')
-            events = Event.objects.filter(start_date__gte=start_date, start_date__lte=end_date, students=students)
+
+            events = Event.objects.filter(start_date__gte=start_date, start_date__lte=end_date)
             serializer = self.serializer_class(events, many=True)
 
             return Response(serializer.data, status=status.HTTP_200_OK) 
