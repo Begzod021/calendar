@@ -45,3 +45,8 @@ class PostStudent(APIView):
             student = StudentGroup(name=name, student_group=student_group, description=description)
             student.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+        else:
+            data = {}
+
+            return Response(data, status=status.HTTP_400_BAD_REQUEST)
