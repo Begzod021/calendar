@@ -24,16 +24,16 @@
                     <th>Decription</th>
                 </tr>
             </thead>
-            {% for el in student %}
             <tbody>
+                {% for el in student %}
                 <tr>
                     <td><a href="{% url 'test' el.id %}">{{ el.id }}</a></td>
                     <td>{{ el.name }}</td>
                     <td>6</td>
                     <td>Lorem ipsum dolor sit amet.</td>
                 </tr>
+                {% endfor %}
             </tbody>
-            {% endfor %}
             <tfoot>
                 <tr>
                     <th>ID</th>
