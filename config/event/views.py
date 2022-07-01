@@ -12,7 +12,6 @@ from rest_framework import status
 from  rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser
 from rest_framework.decorators import permission_classes
-import requests
 class CreateEvent(APIView):
     permission_classes = [IsAdminUser]
     serializer_class =CreateEventSerializer

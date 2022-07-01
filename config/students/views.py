@@ -6,7 +6,8 @@ from .models import StudentGroup
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
-
+from rest_framework.generics import ListAPIView
+from rest_framework.pagination import PageNumberPagination
 def list(request):
     student = StudentGroup.objects.all()
     context = {
@@ -22,14 +23,10 @@ def events(request, pk):
     }
     return render(request, 'events.html', context)
 
-class StudentList(APIView):
+class StudentList(ListAPIView):
+    queryset = StudentGroup.objects.all()
     serializer_class = StudentSerializer
-
-    def get(self, request):
-
-        students = StudentGroup.objects.all()
-        serializer = self.serializer_class(students, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    pagination_class = PageNumberPagination
 
 
 class PostStudent(APIView):
