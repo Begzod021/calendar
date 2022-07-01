@@ -8,6 +8,6 @@ class Event(models.Model):
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
     url = models.URLField()
-    students = models.ForeignKey(StudentGroup, on_delete=models.PROTECT)
+    students = models.ForeignKey(StudentGroup, on_delete=models.CASCADE)
 
 

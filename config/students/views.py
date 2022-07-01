@@ -1,6 +1,7 @@
+import re
 from django.shortcuts import render
 from event.models import *
-from .serializers import StudentSerializer, CreateStudentSerializer
+from .serializers import StudentSerializer, CreateStudentSerializer, DeleteStudentSerializer
 from .models import StudentGroup
 from rest_framework.views import APIView
 from rest_framework import status
@@ -50,3 +51,15 @@ class PostStudent(APIView):
             data = {}
 
             return Response(data, status=status.HTTP_400_BAD_REQUEST)
+
+
+class DeleteStudent(APIView):
+    serializer_class = DeleteStudentSerializer
+
+    def get(self, request, pk):
+        
+        student = StudentGroup.objects.filter(id=pk)
+        student = student[0]
+        student.delete()
+
+        return Response({"msg":"DELETED"}, status=status.HTTP_200_OK)

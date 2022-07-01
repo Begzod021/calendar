@@ -13,3 +13,8 @@ class CreateStudentSerializer(serializers.ModelSerializer):
     class Meta:
         model = StudentGroup
         fields = '__all__'
+
+class DeleteStudentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StudentGroup
+        fields = ('id',)
