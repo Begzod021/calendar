@@ -11,13 +11,13 @@ class GetDateSerializer(serializers.ModelSerializer):
 class CreateEventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
-        fields = ('title', 'start_date', 'end_date', 'url', 'students')
+        fields = ('title', 'start_date', 'end_date', 'join_url', 'students')
 
 
 class GetEventsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
-        fields = ('title', 'start_date', 'end_date', 'url', 'id', 'students')
+        fields = ('title', 'start_date', 'end_date', 'join_url', 'id', 'students')
 
 class GetEventSerializer(serializers.ModelSerializer):
     class Meta:

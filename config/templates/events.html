@@ -45,7 +45,6 @@
       selectable: true,
       select: function(start, end) {
       var title = prompt('Event Title:');
-      var url = prompt('URL:');
       if (title) {
         var start_date = start.start.toISOString();
         var end_date = start.end.toISOString();
@@ -56,7 +55,6 @@
             "title":title,
             "start_date":start_date,
             "end_date": end_date,
-            "url":url,
             'students':{{id}},
             csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
           },
@@ -101,7 +99,7 @@
               var start_date = data[i].start_date
               var end_date = data[i].end_date
               var id = data[i].id
-              var url = data[i].url
+              var url = data[i].join_url
               container.push({title:title, start:start_date, end:end_date, id:id, url:url})
               }
             };

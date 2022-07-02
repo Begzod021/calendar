@@ -1,3 +1,4 @@
+from urllib import request
 from django.shortcuts import render
 from .models import Event, StudentGroup
 from .serializers import (
@@ -12,6 +13,10 @@ from rest_framework import status
 from  rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser
 from rest_framework.decorators import permission_classes
+import json
+import requests
+
+
 class CreateEvent(APIView):
     permission_classes = [IsAdminUser]
     serializer_class =CreateEventSerializer
@@ -21,14 +26,22 @@ class CreateEvent(APIView):
             title = serializer.data.get('title')
             start_date = serializer.data.get('start_date')
             end_date = serializer.data.get('end_date')
-            url = serializer.data.get('url')
             id= serializer.data.get('students')
             students = StudentGroup.objects.filter(id=id)
             students = students[0]
+            data = requests.post("https://api.zoom.us/v2/users/me/meetings", headers={
+            'content-type': "application/json",
+            "authorization": f"Bearer {request.session['zoom_access_token']}"
+            }, data=json.dumps({
+            "topic": f"Interview with { students.name }",
+            "type": 2,
+            "start_time": start_date,
+            }))
 
-            event = Event(title=title, start_date=start_date, end_date=end_date, url=url, students=students)
+            print(data.json()["join_url"], data.json()["start_url"])
+            event = Event(title=title, start_date=start_date, end_date=end_date, students=students, start_url=data.json()["start_url"],
+            join_url =data.json()["join_url"])
             event.save()
-
             return Response(CreateEventSerializer(event).data, status=status.HTTP_201_CREATED)
 
         return Response({"msg":"No Content"}, status=status.HTTP_204_NO_CONTENT)
@@ -42,10 +55,8 @@ class GetEvents(APIView):
         if serializer.is_valid():
             start_date = serializer.data.get('start_date')
             end_date = serializer.data.get('end_date')
-
             events = Event.objects.filter(start_date__gte=start_date, start_date__lte=end_date)
             serializer = self.serializer_class(events, many=True)
-
             return Response(serializer.data, status=status.HTTP_200_OK) 
             
 
@@ -96,6 +107,5 @@ class DetailEvent(APIView):
         students = students[0]
         events = Event.objects.filter(students=students)
         serializer = self.serializer_class(events, many=True)
-
         return Response(serializer.data, status=status.HTTP_200_OK)
 #signal, requests, generic, session, pagination, permission, validates, ORM
